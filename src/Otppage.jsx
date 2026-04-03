@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 export default function OTPVerify() {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [show, setShow] = useState(false);
+    const [focused, setFocused] = useState(false);
   const [error, setError] = useState("");
   const inputs = useRef([]);
   const navigate = useNavigate(); // ✅
@@ -90,10 +91,11 @@ export default function OTPVerify() {
               pattern="[0-9]*"
               // maxLength={1}
               // value={digit}
+              onFocus={() => setFocused(true)}
               onChange={(e) => handleChange(e.target.value, idx)}
               onKeyDown={(e) => handleKeyDown(e, idx)}
                className="w-full border-2 rounded-lg px-4 py-4 text-lg outline-none transition-all bg-white"
-            style={{ borderColor: "#FFCC00" }}
+            style={{ borderColor: focused ? "#FFCC00" : "#d1d5db" }}
               // className="w-14 h-14 rounded-full border-2 border-gray-300 text-center text-xl font-bold text-gray-800 focus:outline-none focus:border-yellow-400 bg-white"
             />
           {/* )) */}
