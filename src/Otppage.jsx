@@ -81,26 +81,40 @@ export default function OTPVerify() {
         </p>
 
         <div className="flex items-center gap-3 mb-10">
-          {otp.map((digit, idx) => (
+          {/* {otp.map((digit, idx) => ( */}
             <input
-              key={idx}
-              ref={(el) => (inputs.current[idx] = el)}
+              // key={idx}
+              // ref={(el) => (inputs.current[idx] = el)}
               type={show ? "tel" : "password"}
               inputMode="numeric"         // ✅ mobile numeric keyboard
               pattern="[0-9]*"
-              maxLength={1}
-              value={digit}
+              // maxLength={1}
+              // value={digit}
               onChange={(e) => handleChange(e.target.value, idx)}
               onKeyDown={(e) => handleKeyDown(e, idx)}
-              className="w-14 h-14 rounded-full border-2 border-gray-300 text-center text-xl font-bold text-gray-800 focus:outline-none focus:border-yellow-400 bg-white"
+               className="w-full border-2 rounded-lg px-4 py-4 text-lg outline-none transition-all bg-white"
+            style={{ borderColor: "#FFCC00" }}
+              // className="w-14 h-14 rounded-full border-2 border-gray-300 text-center text-xl font-bold text-gray-800 focus:outline-none focus:border-yellow-400 bg-white"
             />
-          ))}
-          <button
+          {/* )) */}
+          {/* } */}
+          {/* { otp.map <input
+            type="number"
+            value={digit}
+            onChange={(e) => handleChange(e.target.value, idx)}
+            onKeyDown={(e) => handleKeyDown(e, idx)}
+            // onFocus={() => setFocused(true)}
+            // onBlur={() => setFocused(false)}
+            className="w-full border-2 rounded-lg px-4 py-4 text-lg outline-none transition-all bg-white"
+            style={{ borderColor: focused || pin ? "#FFCC00" : "#d1d5db" }}
+            placeholder=""
+          />} */}
+          {/* <button
             onClick={() => setShow(!show)}
             className="ml-2 text-sm font-bold text-gray-700 tracking-widest"
           >
             {show ? "HIDE" : "SHOW"}
-          </button>
+          </button> */}
         </div>
         {error && (
           <p className="text-red-500 text-sm font-medium mb-4">
